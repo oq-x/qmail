@@ -131,13 +131,15 @@ func OpenMail(mail *imapclient.FetchMessageBuffer, window fyne.Window) {
 	if mail.Envelope.Sender[0].Addr() == imapconfig.username {
 		from += " (*You*)"
 	}
-
-	to := mail.Envelope.To[0].Addr()
-	if mail.Envelope.To[0].Name != "" && mail.Envelope.To[0].Name != mail.Envelope.To[0].Addr() {
-		to += fmt.Sprintf(" (%s)", mail.Envelope.To[0].Name)
-	}
-	if mail.Envelope.To[0].Addr() == imapconfig.username {
-		to += " (*You*)"
+	var to string
+	if len(mail.Envelope.To) != 0 {
+		to = mail.Envelope.To[0].Addr()
+		if mail.Envelope.To[0].Name != "" && mail.Envelope.To[0].Name != mail.Envelope.To[0].Addr() {
+			to += fmt.Sprintf(" (%s)", mail.Envelope.To[0].Name)
+		}
+		if mail.Envelope.To[0].Addr() == imapconfig.username {
+			to += " (*You*)"
+		}
 	}
 
 	s := mail.Envelope.Subject
@@ -149,7 +151,10 @@ func OpenMail(mail *imapclient.FetchMessageBuffer, window fyne.Window) {
 	reciever := widget.NewRichTextFromMarkdown(fmt.Sprintf("To: **%s**", to))
 	subject := widget.NewRichTextFromMarkdown(fmt.Sprintf("## %s", s))
 
-	envelope := container.NewVBox(sender, reciever)
+	envelope := container.NewVBox(sender)
+	if to != "" {
+		envelope.Add(reciever)
+	}
 
 	attachs := container.NewHBox()
 
