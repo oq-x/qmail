@@ -42,14 +42,11 @@ func Select(mailbox string) {
 }
 
 func GetMails(page uint32) ([]*imapclient.FetchMessageBuffer, error) {
-	// Assuming 25 messages per page
 	pageSize := uint32(25)
 
-	// Calculate the range of messages for the requested page in reverse order
 	endMessage := Selected.NumMessages - (page-1)*pageSize
 	startMessage := endMessage - pageSize + 1
 
-	// Ensure startMessage and endMessage are within valid bounds
 	if startMessage < 1 {
 		startMessage = 1
 	}
